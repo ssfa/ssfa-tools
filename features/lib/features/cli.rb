@@ -136,10 +136,10 @@ module Features
     long_desc <<~LONG_DESC
       프롬프트에 작업 중인 이슈 제목을 노출하는 기능을 설치한다.
 
-      Dependencies: direnv, gh cli, starship
+      Dependencies: gh cli, starship
 
-      How To: 
-      \x5  • direnv 가 이용한는 .envrc 에서 STARSHIP_CONFIG (starship.toml) 설정
+      How To:
+      \x5  • mise [env] 에서 STARSHIP_CONFIG (starship.toml) 설정
       \x5  • starship 프롬프트에서 .issue_title 내용을 읽어서 이슈 제목 노출
       \x5  • .git/hook/post-checkout 에서 브랜치 변경시 features save_issue_title 을 호출
     LONG_DESC
@@ -148,11 +148,8 @@ module Features
       hook_cmd = "\nfeatures save_issue_title"
       starship = git_root / ".starship.toml"
       post_checkout = git_root / ".git/hooks/post-checkout"
-      direnv_cmd = "\nexport STARSHIP_CONFIG=$(PWD)/.starship.toml"
-      envrc = git_root / ".envrc"
 
       # validate
-      (STDERR.puts Rainbow("- direnv 환경이 아닙니다.").red or exit 1) unless envrc.exist?
       (STDERR.puts Rainbow("- starship 환경이 아닙니다.").red or exit 1) if ENV["STARSHIP_SHELL"].nil?
       (STDERR.puts Rainbow("- git 프로젝트를 찾을수 없습니다.").red or exit 1) if git_root.nil?
 
@@ -163,9 +160,6 @@ module Features
       end
 
       if options[:remove_all]
-        puts Rainbow("✗ .envrc Uninstalled").red
-        envrc.read.tap { |c| File.open(envrc, "w") { |f| f.write c.gsub(direnv_cmd, "") } } if envrc.exist?
-
         puts Rainbow("✗ .startship.toml deleted").red
         FileUtils.rm_f starship
 
@@ -187,11 +181,6 @@ module Features
           when = "test -s $(git rev-parse --show-toplevel)/.issue_title"
           style = ""
         TOML
-
-        if !envrc.exist? || !envrc.read.include?(direnv_cmd)
-          File.open(envrc, "a") { |f| f.write(direnv_cmd) }
-          puts Rainbow("✔ .envrc Installed").green
-        end
       end
 
       if post_checkout.exist? && post_checkout.read.include?(hook_cmd)

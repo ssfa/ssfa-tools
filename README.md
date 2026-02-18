@@ -54,6 +54,7 @@ mise tasks --all
 ```bash
 mise run //features:test     # 테스트
 mise run //features:build    # 빌드
+mise "//features:*"          # 모두 실행
 ```
 
 ### features/ 에서 실행
