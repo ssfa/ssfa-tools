@@ -1,5 +1,8 @@
 experimental_monorepo_root = true
 
+[monorepo]
+config_roots = ["features"]
+
 [tools]
 ruby = "4.0.1"
 

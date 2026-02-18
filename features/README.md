@@ -1,31 +1,85 @@
-# Features
+# features
 
-TODO: Delete this and the text below, and describe your gem
+GitHub 이슈 기반 브랜치 워크플로우를 지원하는 Ruby CLI gem
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/features`. To experiment with that code, run `bin/console` for an interactive prompt.
+브랜치 이름(`issue/1`, `issues/42`, `feature/3`)에서 이슈 번호를 해석해 GitHub 관련 정보를 처리한다.
 
-## Installation
+## 요구사항
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+- Ruby >= 3.4
+- [gh](https://cli.github.com) — GitHub CLI (`gh auth login` 필요)
 
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
-
-If bundler is not being used to manage dependencies, install the gem by executing:
+## 설치
 
 ```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+gem install features
 ```
 
-## Usage
+또는 Gemfile:
 
-TODO: Write usage instructions here
+```ruby
+gem "features"
+```
 
-## Development
+## 사용법
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```bash
+features info                # 현재 브랜치 연결 open 이슈 목록
+features info --all          # open + closed 이슈 모두
+features info --remote       # 원격 브랜치 포함
+features issue_list          # 최근 open 이슈 목록
+features clean               # closed 이슈 연결 로컬 브랜치 삭제
+features githook             # starship 연동 git hook 설치
+features init zsh            # zsh alias 설치
+features env                 # 환경변수 출력 (디버깅)
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+### 브랜치 예시
+
+```
+issue/1      => #1 이슈
+issue/2-fix  => #2 이슈
+issues/42    => #42 이슈
+feature/3    => #3 이슈
+```
+
+### Shell Alias 설치
+
+```bash
+echo 'eval "$(features init zsh)"' >> ~/.zshrc
+source ~/.zshrc
+features_aliases   # 등록된 alias 목록
+```
+
+| alias      | 설명                              |
+|------------|-----------------------------------|
+| `f`        | `features info --all`             |
+| `fa`       | `features info --remote`          |
+| `fsw`      | fzf로 브랜치 선택 후 switch       |
+| `f_clean`  | closed 이슈 브랜치 삭제           |
+
+## 개발
+
+```bash
+mise install      # ruby 3.4 설치
+bin/setup         # bundle install
+
+bin/t             # 테스트 실행
+bin/t -c          # 테스트 + coverage
+bin/console       # irb 콘솔
+```
+
+또는 mise 태스크:
+
+```bash
+mise run test     # 테스트
+mise run build    # gem 빌드
+```
+
+## ENV
+
+| 변수                  | 설명                          | 기본값 |
+|-----------------------|-------------------------------|--------|
+| `FEATURES_ISSUE_LIMIT` | 출력할 최대 이슈 수          | 100    |
+| `DEBUG`               | `1` 설정 시 상세 에러 출력   | -      |
+| `COVERAGE`            | `1` 설정 시 coverage 측정    | -      |
