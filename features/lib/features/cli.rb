@@ -2,6 +2,7 @@ require 'thor'
 require 'pathname'
 require 'rainbow'
 require 'retryable'
+require 'erb'
 require_relative 'github_helper'
 
 module Features
@@ -41,9 +42,9 @@ module Features
         else 'open'
         end
 
-      `git branch#{" -a" if options[:remote]}`
-        .lines.map(&:strip).select(&method(:issue_num_from_branch))
-        .tap { |branches| load_issues_from_branches(branches, state: state) }
+      cmd(%Q(git branch#{" -a" if options[:remote]}))
+        .lines.map(&:strip).select{ issue_num_from_branch it }
+        .tap { |branches| load_issues_from_branches(branches, state:) }
         .map { |branch| [issues[issue_num_from_branch(branch)], branch.gsub(/^remotes\/origin\//, '')] }
         .select { |issue, _| issue }
         .take(limit.to_i)
@@ -109,7 +110,7 @@ module Features
         command -v f_switch > /dev/null    || alias f_switch="git switch \\`features info | fzf --ansi -q open | head -1 | awk '{print \\$1}'\\`"
         command -v f_create_pr > /dev/null || alias f_create_pr="gh pr create -a '@me' -t \\"\\`features current_issue_title\\`\\" # pr 생성 (fpr)"
         command -v f_clean > /dev/null     || alias f_clean="features clean"
-        command -v f_merge > /dev/null     || alias f_merge="features info && ft && git switch main && git merge - && git commit -am \\"\\`pbpaste\\`\\" # 머지하기 (fm) 
+        command -v f_merge > /dev/null     || alias f_merge="features info && ft && git switch main && git merge - && git commit -am \\"\\`pbpaste\\`\\" # 머지하기 (fm)"
 
         fn f_list_aliases() { alias | grep "$*" --color=never | sed -e 's/alias //' -e "s/=/::/" -e "s/'//g" | awk -F "::" '{ printf "\\033[1;36m%15s  \\033[2;37m=>\\033[0m  %-8s\\n",$1,$2}'; }
         fn features_aliaes(){ f_list_aliases features }
@@ -123,7 +124,7 @@ module Features
 
     def save_issue_title = File.open(issue_title_path, 'w') { |f| f.write issue_title }
 
-    desc 'current_issue_title', '[DEPRECATED] .issue_title 에 이슈 제목을 저장한다. delete after 2021-06'
+    desc 'current_issue_title', 'issue_title 을 출력한다.'
 
     def current_issue_title = puts(issue_title)
 
@@ -262,4 +263,4 @@ module Features
   end
 end
 
-Features.run_cli unless ENV.key?("RUBY_TEST")
+Features.run_cli unless defined?(RSpec)

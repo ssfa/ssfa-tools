@@ -1,3 +1,7 @@
+experimental_monorepo_root = true
+
+[tools]
+ruby = "4.0.1"
 
 [env]
 MISE_EXPERIMENTAL = "1"
