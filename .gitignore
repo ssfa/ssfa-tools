@@ -1,0 +1,12 @@
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# mise
+.mise.local.toml
+
+# 이슈 타이틀 (features githook 생성)
+.issue_title
