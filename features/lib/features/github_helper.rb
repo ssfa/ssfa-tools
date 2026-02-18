@@ -81,7 +81,6 @@ module Features
         .tap(&method(:load_issues_from_branches))
         .map { |branch| issues[issue_num_from_branch(branch)] }
         .map { |issue| make_title(issue) }.first
-      en
     end
 
   end
