@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [[ "${1:-}" == "-c" ]]; then
+  shift
+  exec COVERAGE=1 bundle exec rspec "$@"
+else
+  exec bundle exec rspec "$@"
+fi
