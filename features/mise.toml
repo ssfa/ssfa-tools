@@ -1,0 +1,15 @@
+[tools]
+ruby = "3.4.8"
+
+[env]
+_.path = ["bin", "exe"]
+
+[tasks.test]
+description = "rspec 테스트 실행"
+dir = "{{config_root}}"
+run = "rspec"
+
+[tasks.build]
+description = "gem 빌드"
+dir = "{{config_root}}"
+run = "rake build"

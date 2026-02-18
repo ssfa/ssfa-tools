@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# mise
+.mise.local.toml
+
+# Bundler
+.bundle/
+vendor/
+
+# gem 빌드 산출물
+*.gem
+pkg/
+
+# rbs/steep
+/sig/rbs_collection.lock.yaml
+
+# coverage
+/coverage/

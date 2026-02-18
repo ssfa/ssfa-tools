@@ -1,0 +1,18 @@
+experimental_monorepo_root = true
+
+[monorepo]
+config_roots = ["features"]
+
+[tools]
+ruby = "4.0.1"
+
+[env]
+MISE_EXPERIMENTAL = "1"
+STARSHIP_CONFIG = "{{config_root}}/.starship.toml"
+_.path = ["bin"]
+
+[hooks]
+enter = """
+[ -x "$(command -v toilet)" ] && toilet --gay -f term -F border ssfa-tools
+[ -x "$(command -v features)" ] && features githook -q
+"""
