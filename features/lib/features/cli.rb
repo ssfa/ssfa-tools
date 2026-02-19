@@ -100,12 +100,12 @@ module Features
       exit 0 unless %w[zsh bash -].include?(shell)
 
       bash_script = <<~SHELL
-        command -v f > /dev/null   || alias f='features info --all $@' 
+        command -v f > /dev/null   || alias f='features info --all $@'
         command -v fa > /dev/null  || alias fa="features info --remote $@"
         command -v fl > /dev/null  || alias fl="features issue_list $@"
         command -v fsw > /dev/null || alias fsw="git switch \\`features info | fzf --ansi -q open | head -1 | awk '{print \\$1}'\\`"
         command -v ft > /dev/null  || alias ft="features current_issue_title | sed -E 's/ open$//' | sed -E 's/^/🔀 /' | tr -d '\\n' | pbcopy"
-        command -v fm > /dev/null  || alias fm="features info && ft && git switch main && git merge - && git commit -am \\"\\`pbpaste\\`\\" # 머지하기 (fm) 
+        command -v fm > /dev/null  || alias fm="features info && ft && git switch main && git merge - && git commit -am \\"\\`pbpaste\\`\\" # 머지하기 (fm)"
 
         command -v f_title > /dev/null     || alias ft="features current_issue_title | sed -E 's/ open$//' | sed -E 's/^/🔀 /' | tr -d '\\n' | pbcopy # 머지할 제목 출력(ft)"
         command -v f_switch > /dev/null    || alias f_switch="git switch \\`features info | fzf --ansi -q open | head -1 | awk '{print \\$1}'\\`"
@@ -127,7 +127,7 @@ module Features
 
     desc "current_issue_title", "issue_title 을 출력한다."
 
-    def current_issue_title = puts(issue_title)
+    def current_issue_title = puts(issue_title(state: false, assignees: false, labels: false))
 
     desc "githook", "프롬프트에 작업 중인 이슈 제목을 노출하는 기능을 설치한다."
     option :remove, aliases: "-r", type: :boolean, desc: "git hook 을 지운다."

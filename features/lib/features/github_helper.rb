@@ -32,12 +32,9 @@ module Features
 
     def paint_state(state) = state.gsub("OPEN", Rainbow(" open").green).gsub("CLOSED", Rainbow(" closed").red)
 
-    def make_title(issue, state: true)
+    def make_title(issue, state: true, assignees: true, labels: true)
       issue && <<~TITLE.strip
-        #{Rainbow("##{issue[:number]}").green} #{issue[:title]}#{paint_labels(issue[:labels])}#{paint_assignees(issue[:assignees])}#{
-        if state
-          paint_state(issue[:state])
-        end}
+        #{Rainbow("##{issue[:number]}").green} #{issue[:title]}#{paint_labels(issue[:labels]) if labels}#{paint_assignees(issue[:assignees]) if assignees}#{paint_state(issue[:state]) if state}
       TITLE
     end
 
@@ -75,12 +72,12 @@ module Features
 
     def issue_title_path = @issue_title_path ||= git_root / ".issue_title"
 
-    def issue_title
+    def issue_title(state: true, assignees: true, labels: true)
       cmd("git branch --show-current")
         .lines.map(&:strip)
         .tap(&method(:load_issues_from_branches))
         .map { |branch| issues[issue_num_from_branch(branch)] }
-        .map { |issue| make_title(issue) }.first
+        .map { |issue| make_title(issue, state:, assignees:, labels:) }.first
     end
 
   end

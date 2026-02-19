@@ -13,3 +13,8 @@ run = "rspec"
 description = "gem 빌드"
 dir = "{{config_root}}"
 run = "rake build"
+
+[tasks.coverage]
+description = "coverage 테스트 실행"
+dir = "{{config_root}}"
+run = "COVERAGE=true rspec"
