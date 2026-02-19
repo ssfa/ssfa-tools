@@ -13,6 +13,16 @@ RSpec.describe Features::GithubHelper do
     { number: 2, title: "완료된 이슈", labels: [], assignees: [], state: "CLOSED" }
   end
 
+  let(:issue_with_metadata) do
+    {
+      number: 3,
+      title: "메타 이슈",
+      labels: [{ "name" => "bug", "color" => "ff0000" }],
+      assignees: [{ "login" => "simon" }],
+      state: "OPEN"
+    }
+  end
+
   let(:gh_response) do
     [{ "number" => 1, "title" => "테스트 이슈", "labels" => [], "assignees" => [], "state" => "OPEN" }].to_json
   end
@@ -31,24 +41,20 @@ RSpec.describe Features::GithubHelper do
   end
 
   describe "#issue_num_from_branch" do
-    it "issue/숫자 형식에서 이슈 번호를 반환한다" do
-      expect(helper.issue_num_from_branch("issue/42")).to eq("42")
+    where(:branch, :expected) do
+      [
+        ["issue/42", "42"],
+        ["issues/7", "7"],
+        ["feature/3", "3"],
+        ["main", nil],
+        ["issue/10-fix-bug", "10"]
+      ]
     end
 
-    it "issues/숫자 형식도 인식한다" do
-      expect(helper.issue_num_from_branch("issues/7")).to eq("7")
-    end
-
-    it "feature/숫자 형식도 인식한다" do
-      expect(helper.issue_num_from_branch("feature/3")).to eq("3")
-    end
-
-    it "이슈 번호가 없으면 nil 을 반환한다" do
-      expect(helper.issue_num_from_branch("main")).to be_nil
-    end
-
-    it "issue/숫자-설명 형식도 인식한다" do
-      expect(helper.issue_num_from_branch("issue/10-fix-bug")).to eq("10")
+    with_them do
+      it "브랜치명에서 이슈 번호를 추출한다" do
+        expect(helper.issue_num_from_branch(branch)).to eq(expected)
+      end
     end
   end
 
@@ -84,13 +90,22 @@ RSpec.describe Features::GithubHelper do
   end
 
   describe "#make_title" do
-    it "이슈 번호와 제목을 포함한 문자열을 반환한다" do
-      expect(helper.make_title(open_issue)).to include("테스트 이슈")
+    where(:state, :assignees, :labels, :includes, :excludes) do
+      [
+        [true, true, true, ["메타 이슈", "bug", "@simon", "open"], []],
+        [false, true, true, ["bug", "@simon"], ["open"]],
+        [true, true, false, ["@simon", "open"], ["bug"]],
+        [true, false, true, ["bug", "open"], ["@simon"]]
+      ]
     end
 
-    it "state: false 이면 상태를 포함하지 않는다" do
-      result = helper.make_title(open_issue, state: false)
-      expect(result).not_to include("open")
+    with_them do
+      it "옵션별로 제목 구성 요소를 포함/제외한다" do
+        result = helper.make_title(issue_with_metadata, state:, assignees:, labels:)
+
+        includes.each { |text| expect(result).to include(text) }
+        excludes.each { |text| expect(result).not_to include(text) }
+      end
     end
 
     it "issue 가 nil 이면 nil 을 반환한다" do

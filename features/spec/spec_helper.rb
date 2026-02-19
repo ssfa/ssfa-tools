@@ -9,6 +9,7 @@ if ENV["COVERAGE"]
 end
 
 require "bundler/setup"
+Bundler.require(:default, :test)
 require "features"
 
 RSpec.configure do |config|

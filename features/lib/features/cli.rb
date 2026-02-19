@@ -105,7 +105,7 @@ module Features
         command -v fl > /dev/null  || alias fl="features issue_list $@"
         command -v fsw > /dev/null || alias fsw="git switch \\`features info | fzf --ansi -q open | head -1 | awk '{print \\$1}'\\`"
         command -v ft > /dev/null  || alias ft="features current_issue_title | sed -E 's/ open$//' | sed -E 's/^/🔀 /' | tr -d '\\n' | pbcopy"
-        command -v fm > /dev/null  || alias fm="features info && ft && git switch main && git merge - && git commit -am \\"\\`pbpaste\\`\\" # 머지하기 (fm)
+        command -v fm > /dev/null  || alias fm="features info && ft && git switch main && git merge - && git commit -am \\"\\`pbpaste\\`\\" # 머지하기 (fm)"
 
         command -v f_title > /dev/null     || alias ft="features current_issue_title | sed -E 's/ open$//' | sed -E 's/^/🔀 /' | tr -d '\\n' | pbcopy # 머지할 제목 출력(ft)"
         command -v f_switch > /dev/null    || alias f_switch="git switch \\`features info | fzf --ansi -q open | head -1 | awk '{print \\$1}'\\`"

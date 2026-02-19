@@ -12,5 +12,6 @@ gem "rubocop", "~> 1.21"
 
 group :test do
   gem "rspec", "~> 3.0"
+  gem "rspec-parameterized"
   gem "simplecov", require: false
 end
